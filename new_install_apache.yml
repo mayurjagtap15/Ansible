@@ -1,0 +1,17 @@
+---
+
+- hosts: all
+  become: true
+  gather_facts: true
+  vars:
+    apache_package: '{{ ''apache2'' if ansible_distribution == ''Ubuntu'' else ''httpd'' }}'
+    php_package: '{{ ''libapache2-mod-php'' if ansible_distribution == ''Ubuntu'' else ''php'' }}'
+  tasks:
+    - name: Install Apache and Php
+      package:
+        name:
+          - '{{ apache_package }}'
+          - '{{ php_package }}'
+        state: latest
+        update_cache: 'yes'
+
