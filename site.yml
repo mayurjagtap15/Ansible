@@ -1,0 +1,42 @@
+---
+
+- hosts: all
+  become: true
+  gather_facts: true
+  
+  tasks:
+    - name: Install Updates (RedHat)
+      yum:
+        update_only: yes
+        update_cache: yes
+      when: ansible_distribution == "RedHat"
+
+    - name: Install Update (Ubuntu)
+      apt:
+        upgrade: dist
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+- hosts: web_servers
+  become: true
+  gather_facts: true
+
+   tasks:
+     - name: Install Apache and php for Ubuntu Server
+       apt: 
+       name:
+         - apache2
+         - libapache2-mod-php
+       state: latest
+     when: ansible_distribution == "Ubuntu"
+ 
+     - name: Install Apache and php for RedHat Server
+       yum:
+         name:
+         - httpd
+         - php
+       state: latest
+     when: ansible_distribution == "RedHat"
+
+
+

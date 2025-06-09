@@ -5,37 +5,21 @@
   gather_facts: true
 
   tasks:
-    - name: Update APT repository index (Ubuntu)
-      apt:
-        update_cache: yes
-      when: ansible_distribution == "Ubuntu"
-
     - name: Install Apache (Ubuntu)
       apt:
-        name: apache2
+        name: 
+          - apache2
+          - libapache2-mod-php  
         state: latest
-      when: ansible_distribution == "Ubuntu"
-
-    - name: Install PHP support for Apache (Ubuntu)
-      apt:
-        name: libapache2-mod-php
-        state: latest
-      when: ansible_distribution == "Ubuntu"
-
-    - name: Update YUM repository index (RHEL/CentOS/Amazon)
-      yum:
         update_cache: yes
-      when: ansible_distribution in ["RedHat", "CentOS", "Amazon"]
+      when: ansible_distribution == "Ubuntu"
 
     - name: Install Apache (RHEL/CentOS/Amazon)
       yum:
-        name: httpd
+        name: 
+          - httpd
+          - php  
         state: latest
-      when: ansible_distribution in ["RedHat", "CentOS", "Amazon"]
-
-    - name: Install PHP support for Apache (RHEL/CentOS/Amazon)
-      yum:
-        name: php
-        state: latest
+        update_cache: yes
       when: ansible_distribution in ["RedHat", "CentOS", "Amazon"]
 
