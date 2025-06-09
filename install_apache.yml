@@ -6,14 +6,34 @@
     - name: Update Repository index
       apt:
         update_cache: yes
+      when: ansible_distribution == "Ubuntu"
     
     - name: Install Apache Package on hosts
       apt:
         name: apache2
         state: latest
+        when: ansible_distribution == "Ubuntu"
 
     - name: Add php support for Apache
       apt:
         name: libapache2-mod-php
         state: latest
+        when: ansible_distribution == "Ubuntu"
+
+    - name: Update Repository index
+      yum:
+        update_cache: yes
+      when: ansible_distribution == "RedHat"
+
+    - name: Install Apache Package on hosts
+      yum:
+        name: httpd
+        state: latest
+        when: ansible_distribution == "RedHat"
+
+    - name: Add php support for Apache
+      yum:
+        name: php
+        state: latest
+        when: ansible_distribution == "RedHat"
 
