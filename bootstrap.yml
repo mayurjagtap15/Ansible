@@ -1,0 +1,45 @@
+---
+- hosts: all
+  become: true
+  gather_facts: true
+
+  pre_tasks:
+    - name: Install Updates (RedHat)
+      tags: always
+      yum:
+        update_only: yes
+        update_cache: yes
+      when: ansible_distribution == "RedHat"
+
+    - name: Install Updates (Ubuntu)
+      tags: always
+      apt:
+        upgrade: dist
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+
+- hosts: all
+  become: true
+  tasks:
+    - name: Create User Mayur
+      tags: always 
+      user:
+        name: Mayur
+        groups: root
+
+    - name: Add SSH key for Mayur
+      tags: always
+      authorized_key:
+        user: Mayur
+        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE9uLUxfrXqrGnDAc6/bZ//5dSTza2jK7znzy8iNuRb+ root@ip-172-31-3-172"
+
+    - name: Add Sudoers file for Mayur
+      tags: always
+      copy:
+        src: /home/ubuntu/Ansible/files/mayur_sudoers
+        dest: /etc/sudoers.d/mayur
+        owner: root
+        group: root
+        mode: '0440'
+
