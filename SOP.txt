@@ -1,0 +1,3 @@
+To run creatingroles.yml use below ansibl command
+
+ansible-playbook -i inventory creatingroles.yml --private-key=/root/.ssh/id_ed25519

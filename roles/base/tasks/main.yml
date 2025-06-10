@@ -1,0 +1,6 @@
+
+- name: Add SSH key for MayurAdd commentMore actions
+  authorized_key:
+    user: Mayur
+    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE9uLUxfrXqrGnDAc6/bZ//5dSTza2jK7znzy8iNuRb+ root@ip-172-31-3-172"
+

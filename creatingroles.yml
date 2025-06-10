@@ -1,0 +1,129 @@
+---
+- hosts: all
+  become: true
+  gather_facts: true
+
+  pre_tasks:
+    - name: Update Repo Cache (RedHat)
+      tags: always
+      yum:
+        update_cache: yes
+      changed_when: false    
+      when: ansible_distribution == "RedHat"
+
+    - name: Update Repo Cache (Ubuntu)
+      tags: always
+      apt:
+        update_cache: yes
+      changed_when: false    
+      when: ansible_distribution == "Ubuntu"
+
+
+- hosts: all
+  become: true
+  tasks:
+
+    - name: Add SSH key for Mayur
+      tags: always
+      authorized_key:
+        user: Mayur
+        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE9uLUxfrXqrGnDAc6/bZ//5dSTza2jK7znzy8iNuRb+ root@ip-172-31-3-172"
+
+
+- hosts: workstations
+  become: true
+  tasks:
+    - name: Install unzip
+      package:
+        name: unzip
+    - name: Install Terraform
+      unarchive:
+        src: https://releases.hashicorp.com/terraform/1.12.1/terraform_1.12.1_linux_amd64.zip
+        dest: /usr/local/bin
+        remote_src: yes
+        mode: 0755
+        owner: root
+        group: root
+
+- hosts: all
+  become: true
+  roles:
+     - base
+    
+- hosts: workstations
+  become: true
+  roles:
+     - workstations
+ 
+- hosts: web_servers
+  become: true
+  roles:
+     - web_servers
+ 
+- hosts: db_servers
+  become: true
+  roles:
+     - db_servers
+ 
+- hosts: file_servers
+  become: true
+  roles:
+     - file_servers
+
+- hosts: web_servers
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Install Apache and PHP for Ubuntu Server
+      tags: apache,apache2,ubuntu 
+      apt:
+        name:
+          - apache2
+          - libapache2-mod-php
+        state: latest
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Install Apache and PHP for RedHat Server
+      tags: apache,httpd,RedHat
+      yum:
+        name:
+          - httpd
+          - php
+        state: latest
+      when: ansible_distribution == "RedHat"
+
+    - name: Start httpd (RedHat)
+      tags: apache,RedHat,httpd
+      service:
+        name: httpd
+        state: restarted
+        enabled: yes
+      when: ansible_distribution == "RedHat"
+
+- hosts: db_servers
+  become: true
+  tasks:
+    - name: Install mariadb package on RedHat
+      tags: RedHat,db,mariadb 
+      yum:
+        name: mariadb
+        state: latest 
+      when: ansible_distribution == "RedHat"
+    - name: Install mariadb package on Ubuntu
+      tags: Ubuntu,db,mariadb
+      apt:
+        name: mariadb-server
+        state: latest
+      when: ansible_distribution == "Ubuntu"
+
+- hosts: file_servers
+  become: true
+  tasks:
+    - name: Install samba package on File server
+      tags: samba
+      package:
+       name: samba
+       state: latest
+
+
